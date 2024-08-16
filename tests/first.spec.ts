@@ -17,12 +17,12 @@ test.describe("Auth test", () => {
     }
   });
 
-  test("Open letcode and verify title", async ({ page }) => {
+  test("Open Solid Github Repo and verify title", async ({ page }) => {
     const title = await page.title();
     expect(title).toBe("Solid Github Repositories");
   });
 
-  test("open letcode and login", async ({ page }) => {
+  test("open Solid Github Repo  and switch tabs", async ({ page }) => {
     const title = await page.title();
     expect(title).toBe("Solid Github Repositories");
 

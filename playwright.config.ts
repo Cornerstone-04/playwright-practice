@@ -28,7 +28,7 @@ export default defineConfig({
     baseURL: "https://solid-app-github-repos.vercel.app",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    headless: false,
+    headless: true,
     trace: "on-first-retry",
     // screenshot: "only-on-failure",
     // video: "retain-on-failure"

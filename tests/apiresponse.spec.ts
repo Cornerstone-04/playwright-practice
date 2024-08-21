@@ -2,7 +2,7 @@ import test, { expect } from "@playwright/test";
 import { getSnapshotPath } from "../utils/snapshot-helper";
 import fs from "fs";
 
-condt userName = "Barry-san";
+const userName = "Barry-san";
 
 test.describe("Wait for API response", () => {
   test.beforeEach(async ({ page }) => page.goto("/"));
@@ -34,7 +34,9 @@ test.describe("Wait for API response", () => {
       page.getByText("Fetch", { exact: true }).click(),
     ]);
 
-    await expect(page.locator(`text=Github Repos for ${userName}`)).toBeVisible();
+    await expect(
+      page.locator(`text=Github Repos for ${userName}`)
+    ).toBeVisible();
 
     console.log("Raw response:", await response.json());
   });

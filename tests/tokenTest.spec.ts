@@ -51,3 +51,59 @@ test.describe(() => {
     await expect(page).toHaveURL("/sell/store")
   });
 });
+
+
+test('store access token', async ({ page }) => {
+  const signinURL =
+    'https://fx-api-gateway.development.moniepoint.com/gateway/identity/v1/logins';
+
+  await page.goto('/signin');
+
+  //   Wait for the specific response from the signin request and perform the actions in parallel
+  const [response] = await Promise.all([
+    page.waitForResponse(
+      (response) => response.status() === 200 && response.url() === signinURL,
+    ),
+    // Fill in the signin form and submit
+    await page.locator("input[name='phone']").fill('9020020020'),
+    await page.locator("input[name='password']").fill('Password20@'),
+    await page.locator('button[type="submit"]').click(),
+  ]);
+
+  // Extract the response data as JSON
+  const responseData = await response.json();
+  console.log('Raw response:', responseData);
+
+  // Extract the token from the response data (assuming it's included in the response)
+  const token = responseData.accessToken;
+
+  // Set the token as a cookie
+  await page.evaluate((token) => {
+    document.cookie = `fx.remittance.token=${token}; path=/`;
+  }, token);
+
+  // Ensure that the navigation after signin is successful
+  await expect(page).toHaveURL('/dashboard'); // Adjust the URL based on your application
+
+  // Create an API request context with the extracted token
+  const apiContext = await page.context().newPage();
+
+  // Use the API context to make an authenticated API request
+  const apiResponse = await apiContext.request.get(signinURL, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  // Check if the response status is OK (status code 200)
+  if (apiResponse.ok()) {
+    const data = await apiResponse.json();
+    console.log(data);
+
+    // Continue with your tests or assertions on the API response
+    expect(data).toHaveProperty('accessToken');
+  } else {
+    console.error('API request failed with status:', apiResponse.status());
+    console.error('Response text:', await apiResponse.text());
+  }
+});
